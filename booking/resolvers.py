@@ -36,7 +36,7 @@ def add_booking(_, info, userid, dates):
             return None  # Utilisateur invalide
     except Exception as e:
         print(f"Error contacting User service: {e}")
-        return None  # Service User indisponible'''g
+        return None  # Service User indisponible'''
 
     # todo: valider les dates et films via appel gRPC au service Schedule
     # pour chaque date dans dates:
