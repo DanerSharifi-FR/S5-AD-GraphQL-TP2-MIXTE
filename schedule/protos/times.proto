@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package times;
+
+// Un jour de planning
+message ScheduleDay {
+  string date = 1;              // ex: "2025-11-15"
+  repeated string movies = 2;   // liste d'IDs de films
+}
+
+// Requête qui contient juste une date
+message DateRequest {
+  string date = 1;
+}
+
+// Réponse générique du service Times
+// - soit "message" est rempli (success)
+// - soit "error" est rempli (erreur)
+// - "day" peut contenir le jour concerné (GET/DELETE)
+message TimesReply {
+  string message = 1;
+  string error = 2;
+  ScheduleDay day = 3;
+}
+
+// Service gRPC équivalent à ton API REST Times
+service Times {
+  // GET /schedule/<date>
+  rpc GetScheduleByDate (DateRequest) returns (TimesReply);
+
+  // POST /schedule
+  // on envoie directement un ScheduleDay (date + movies)
+  rpc AddSchedule (ScheduleDay) returns (TimesReply);
+
+  // DELETE /schedule/<date>
+  rpc DeleteSchedule (DateRequest) returns (TimesReply);
+}
