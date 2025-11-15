@@ -26,17 +26,14 @@ def add_booking(_, info, userid, dates):
             return None  # L'utilisateur existe déjà
 
     # Valider que l'utilisateur existe via appel REST au service User
-    '''try:
+    print(f"Contacting User service to validate user {userid}...")
+    try:
         resp = requests.get(f"http://localhost:3203/users/{userid}")
         if resp.status_code != 200:
-            # debug :
-            print(f"User service returned status code {resp.status_code} for user {userid}.")
-            # print (resp.json()) for debug
-            print(resp.text)
-            return None  # Utilisateur invalide
+            return None  # Utilisateur non trouvé
     except Exception as e:
         print(f"Error contacting User service: {e}")
-        return None  # Service User indisponible'''
+        return None  # Service User indisponible
 
     # todo: valider les dates et films via appel gRPC au service Schedule
     # pour chaque date dans dates:
