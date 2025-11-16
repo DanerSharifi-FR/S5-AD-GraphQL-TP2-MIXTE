@@ -1,7 +1,70 @@
 services:
-  movie:
-    build: ./movie/
+  mongo:
+    image: mongo:6
+    container_name: mongo-mixte
     ports:
-      - "3200:3200"
-  # to continue
+      - "${MONGO_PORT}:${MONGO_PORT}"
+    volumes:
+      - mongo_data:/data/db
 
+  user:
+    build:
+      context: .
+      dockerfile: user/Dockerfile
+    container_name: user-mixte
+    ports:
+      - "${USER_PORT}:${USER_PORT}"
+    volumes:
+      - ./user/databases:/app/user/databases
+    environment:
+      - MONGO_URI=${MONGO_URI_DOCKER}
+      - MONGO_DB_NAME=${MONGO_DB_NAME}
+      - USE_MONGO=${USE_MONGO}
+  
+  movie:
+    build:
+      context: .
+      dockerfile: movie/Dockerfile
+    container_name: movie-mixte
+    ports:
+      - "${MOVIE_PORT}:${MOVIE_PORT}"
+    volumes:
+      - ./movie/databases:/app/movie/databases
+    environment:
+      - MONGO_URI=${MONGO_URI_DOCKER}
+      - MONGO_DB_NAME=${MONGO_DB_NAME}
+      - USE_MONGO=${USE_MONGO}
+
+  schedule:
+    build:
+      context: .
+      dockerfile: schedule/Dockerfile
+    container_name: schedule-mixte
+    ports:
+      - "${SCHEDULE_PORT}:${SCHEDULE_PORT}"
+    volumes:
+      - ./schedule/databases:/app/schedule/databases
+    environment:
+      - MONGO_URI=${MONGO_URI_DOCKER}
+      - MONGO_DB_NAME=${MONGO_DB_NAME}
+      - USE_MONGO=${USE_MONGO}
+      - MOVIE_SERVICE_URL=${MOVIE_SERVICE_URL_DOCKER}
+
+  booking:
+    build:
+      context: .
+      dockerfile: booking/Dockerfile
+    container_name: booking-mixte
+    ports:
+      - "${BOOKING_PORT}:${BOOKING_PORT}"
+    volumes:
+      - ./booking/databases:/app/booking/databases
+    environment:
+      - MONGO_URI=${MONGO_URI_DOCKER}
+      - MONGO_DB_NAME=${MONGO_DB_NAME}
+      - USE_MONGO=${USE_MONGO}
+      - USER_SERVICE_URL=${USER_SERVICE_URL_DOCKER}
+      - MOVIE_SERVICE_URL=${MOVIE_SERVICE_URL_DOCKER}
+      - SCHEDULE_SERVICE_URL=${SCHEDULE_SERVICE_URL_DOCKER}
+volumes:
+  mongo_data:

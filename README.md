@@ -12,3 +12,7 @@ source .venv/bin/activate
 pip3 install -r requirements.txt
 
 bash start.sh
+
+docker compose build
+python3 import_json_into_mongo.py
+docker compose up <nom-conteneur> 

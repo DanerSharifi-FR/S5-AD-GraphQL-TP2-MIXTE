@@ -1,65 +1,53 @@
-import json
+# booking/resolvers.py
 import os
+import sys
 import requests
 import grpc
 
-# Assure-toi que ces deux modules sont accessibles depuis Booking :
-# -> copie times_pb2.py et times_pb2_grpc.py générés depuis le .proto
+# Générés à partir du .proto, copiés dans booking/
 import times_pb2
 import times_pb2_grpc
 
-script_dir = os.path.dirname(os.path.abspath(__file__))
+# chemins pour importer config + repository
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(CURRENT_DIR)
 
-# Cible du service Schedule gRPC (change en "schedule:3202" si tu es en docker-compose)
-SCHEDULE_GRPC_TARGET = os.getenv("SCHEDULE_GRPC_TARGET", "localhost:3202")
+if PROJECT_ROOT not in sys.path:
+    sys.path.append(PROJECT_ROOT)
+
+import repository as repo
+from config import USER_SERVICE_URL, SCHEDULE_PORT, USER_PORT, SCHEDULE_SERVICE_URL
+
+# Cible du service Schedule gRPC
+# - hors Docker : localhost:<SCHEDULE_PORT>
+# - en Docker   : override via SCHEDULE_GRPC_TARGET
+SCHEDULE_GRPC_TARGET = f"{SCHEDULE_SERVICE_URL}:{SCHEDULE_PORT}"
 
 
 def booking_by_user(_, info, userid):
-    # TODO : Vérifier l'authentification
-    with open(f'{script_dir}/data/bookings.json', "r") as file:
-        bookings = json.load(file)
-    for booking in bookings['bookings']:
-        if booking['userid'] == userid:
-            return booking
-    return None
+    # TODO : Auth si besoin
+    booking = repo.get_booking_by_userid(userid)
+    return booking
 
 
 def add_booking(_, info, userid, dates):
-    with open(f'{script_dir}/data/bookings.json', "r") as rfile:
-        bookings = json.load(rfile)
+    # 1. Vérifier si l'utilisateur a déjà des réservations
+    existing = repo.get_booking_by_userid(userid)
+    if existing is not None:
+        print(f"User {userid} already has a booking.")
+        return None
 
-    # Vérifier si l'utilisateur a déjà des réservations
-    for booking in bookings['bookings']:
-        if booking['userid'] == userid:
-            # debug :
-            print(f"User {userid} already has a booking.")
-            return None  # L'utilisateur existe déjà
-
-    # Valider que l'utilisateur existe via appel REST au service User
+    # 2. Valider que l'utilisateur existe via service User (REST)
     try:
-        resp = requests.get(f"http://localhost:3203/users/{userid}")
+        resp = requests.get(f"{USER_SERVICE_URL}:{USER_PORT}/users/{userid}", timeout=3)
         if resp.status_code != 200:
-            print(f"User {userid} not found in User service.")
-            return None  # Utilisateur non trouvé
+            print(f"User {userid} not found in User service. status={resp.status_code}")
+            return None
     except Exception as e:
         print(f"Error contacting User service: {e}")
-        return None  # Service User indisponible
+        return None
 
-    # ------------------------------------------------------------------
-    # Valider les dates et films via appel gRPC au service Schedule
-    # pour chaque date dans dates:
-    #   - vérifier si la date existe dans le planning
-    #   - vérifier si chaque film est disponible à cette date
-    # ------------------------------------------------------------------
-    #
-    # On suppose que "dates" ressemble à :
-    # dates = [
-    #   { "date": "2025-11-15", "movies": ["id1", "id2"] },
-    #   ...
-    # ]
-    #
-    # Si ce n'est pas exactement ça, adapte les clés (date/movies) en conséquence.
-
+    # 3. Valider dates & films via gRPC Schedule (Times)
     try:
         with grpc.insecure_channel(SCHEDULE_GRPC_TARGET) as channel:
             stub = times_pb2_grpc.TimesStub(channel)
@@ -78,15 +66,11 @@ def add_booking(_, info, userid, dates):
                         times_pb2.DateRequest(date=date_str)
                     )
                 except grpc.RpcError as e:
-                    # Si le service Schedule répond avec NOT_FOUND / UNAVAILABLE / etc.
                     print(f"Error from Schedule service for date {date_str}: {e.code()} {e.details()}")
                     return None
 
-                # Si pas d'exception, la date existe et on a le planning de cette date
                 scheduled_movies = set(schedule_reply.day.movies)
 
-                # Vérifier que tous les films de la réservation pour cette date
-                # sont bien dans le planning de cette date
                 for movie_id in movies_for_date:
                     if movie_id not in scheduled_movies:
                         print(f"Movie {movie_id} is not available on date {date_str}.")
@@ -96,35 +80,24 @@ def add_booking(_, info, userid, dates):
         print(f"Error while validating dates with Schedule service: {e}")
         return None
 
-    # ----------------- Fin validation Schedule ------------------------
-
-    # Créer nouvelle réservation
-    new_booking = {
-        "userid": userid,
-        "dates": dates
+    # 4. Créer nouvelle réservation
+    booking_doc = {
+        "userid": str(userid),
+        "dates": dates,
     }
 
-    bookings['bookings'].append(new_booking)
+    created = repo.add_booking(booking_doc)
+    if created is None:
+        print(f"User {userid} already has a booking (repo refused).")
+        return None
 
-    with open(f'{script_dir}/data/bookings.json', "w") as wfile:
-        json.dump(bookings, wfile, indent=2)
-
-    return new_booking
+    return created
 
 
 def delete_booking(_, info, userid):
-    # TODO : Vérifier l'authentification
-    with open(f'{script_dir}/data/bookings.json', "r") as rfile:
-        bookings = json.load(rfile)
-
-    # Trouver et supprimer la réservation
-    for booking in bookings['bookings']:
-        if booking['userid'] == userid:
-            bookings['bookings'].remove(booking)
-
-            with open(f'{script_dir}/data/bookings.json', "w") as wfile:
-                json.dump(bookings, wfile, indent=2)
-
-            return booking
-
-    return None  # Utilisateur non trouvé
+    # TODO : Auth si besoin
+    deleted = repo.delete_booking_by_userid(userid)
+    if deleted is None:
+        print(f"Booking for user {userid} not found.")
+        return None
+    return deleted

@@ -3,7 +3,7 @@
     {
       "id": "chris_rivers",
       "name": "Chris Rivers",
-      "last_active":1360031010,
+      "last_active": 1360031010,
       "is_admin": true
     },
     {
@@ -39,8 +39,7 @@
     {
       "id": "dwight_schrute",
       "name": "Dwight Schrute",
-      "last_active": 1360031202,
-      "is_admin": false
+      "last_active": 1360031202
     }
   ]
 }

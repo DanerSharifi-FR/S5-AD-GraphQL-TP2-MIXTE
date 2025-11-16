@@ -1,19 +1,23 @@
-FROM python
-# can you find a lighter image?
+# image plus légère que "python"
+FROM python:3.10-slim
 
+# On bosse depuis /app (tout le projet)
 WORKDIR /app
 
-# copy the requirements file in the workdir
-RUN
+# Copier les dépendances depuis la racine du projet
+COPY requirements.txt .
 
-# install the Python requirements
-RUN
+# Installer les dépendances Python
+RUN pip install --no-cache-dir -r requirements.txt
 
-# grpc compilation of proto files or copy of generated files
-RUN
+# Copier **tout** le projet (config.py, schedule/, movie/, etc.)
+COPY . .
 
-# copy the app files and directories
-RUN
+# Aller dans le dossier schedule pour lancer le service gRPC
+WORKDIR /app/schedule
 
-# start movie.py when the container is started
-CMD 
+# Info uniquement : le vrai port est SCHEDULE_PORT (config), par défaut 3202
+EXPOSE 3202
+
+# Démarrage du service gRPC schedule
+CMD ["python", "schedule.py"]
