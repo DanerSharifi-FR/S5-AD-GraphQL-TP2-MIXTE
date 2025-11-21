@@ -1,9 +1,26 @@
 # S5-AD-GraphQL-TP2-MIXTE – REST + GraphQL + gRPC
 
 ---
-## Fait par :
-[![badge](https://img.shields.io/badge/Daner-SHARIFI-blue)](https://www.daner-sharifi.fr)
-[![badge](https://img.shields.io/badge/Bastien-BOUVET-blue)](mailto:bastien.bouvet@imt-atlantique.net)
+
+<p style="text-align: center">
+  <a href="https://www.daner-sharifi.fr">
+    <img src="https://img.shields.io/badge/Daner%20SHARIFI-FIL A1-blue?style=for-the-badge" alt="Daner SHARIFI">
+  </a>
+  <a href="mailto:bastien.bouvet@imt-atlantique.net">
+    <img src="https://img.shields.io/badge/Bastien%20BOUVET-FIL A1-blueviolet?style=for-the-badge" alt="Bastien BOUVET">
+  </a>
+</p>
+
+<p style="text-align: center">
+  <img src="https://img.shields.io/badge/Python-3.10+-informational?style=flat-square"  alt="Python 3.10+"/>
+  <img src="https://img.shields.io/badge/Flask-REST-success?style=flat-square" alt="Flask REST"/>
+  <img src="https://img.shields.io/badge/Ariadne-GraphQL-orange?style=flat-square" alt="Ariadne GraphQL"/>
+  <img src="https://img.shields.io/badge/gRPC-Microservices-brightgreen?style=flat-square" alt="gRPC Microservices"/>
+  <img src="https://img.shields.io/badge/MongoDB-JSON%20↔%20DB-darkgreen?style=flat-square" alt="MongoDB JSON to DB"/>
+  <img src="https://img.shields.io/badge/Docker-Multi--services-blue?style=flat-square" alt="Docker Multi-services"/>
+</p>
+
+---
 
 Ce TP prolonge le TP REST avec une architecture **MIXTE** :
 
