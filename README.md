@@ -2,7 +2,7 @@
 
 ---
 
-<p style="text-align: center">
+<p align="center">
   <a href="https://www.daner-sharifi.com">
     <img src="https://img.shields.io/badge/Daner%20SHARIFI-FIL A1-blue?style=for-the-badge" alt="Daner SHARIFI">
   </a>
@@ -11,11 +11,11 @@
   </a>
 </p>
 
-<p style="text-align: center">
+<p align="center">
   <img src="https://img.shields.io/badge/Python-3.10+-informational?style=flat-square"  alt="Python 3.10+"/>
   <img src="https://img.shields.io/badge/Flask-REST-success?style=flat-square" alt="Flask REST"/>
   <img src="https://img.shields.io/badge/Ariadne-GraphQL-orange?style=flat-square" alt="Ariadne GraphQL"/>
-  <img src="https://img.shields.io/badge/gRPC-Microservices-brightgreen?style=flat-square" alt="gRPC Microservices"/>
+  <img src="https://img.shields.io/badge/gRPC-Microservices-green?style=flat-square" alt="gRPC Microservices"/>
   <img src="https://img.shields.io/badge/MongoDB-JSON%20↔%20DB-darkgreen?style=flat-square" alt="MongoDB JSON to DB"/>
   <img src="https://img.shields.io/badge/Docker-Multi--services-blue?style=flat-square" alt="Docker Multi-services"/>
 </p>
