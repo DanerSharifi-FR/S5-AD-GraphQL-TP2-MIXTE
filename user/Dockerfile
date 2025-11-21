@@ -11,10 +11,11 @@ COPY requirements.txt .
 # Installer les dépendances Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copier **tout** le projet dans l'image (config.py compris)
-COPY . .
+# Copier config.py dans l'image
+COPY config.py .
+COPY .env .
+COPY ./user ./user
 
-# Aller dans le dossier user pour lancer le service
 WORKDIR /app/user
 
 EXPOSE 3203

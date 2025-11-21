@@ -5,19 +5,20 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Copier les dépendances depuis la racine du projet
+# (on va build avec context = .)
 COPY requirements.txt .
 
 # Installer les dépendances Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copier **tout** le projet dans l'image (config.py, movie/, user/, etc.)
-COPY . .
+# Copier config.py dans l'image
+COPY config.py .
+COPY .env .
+COPY ./movie ./movie
 
-# Aller dans le dossier movie pour lancer le service GraphQL
 WORKDIR /app/movie
 
-# Info uniquement, le vrai port utilisé vient de MOVIE_PORT dans config.py
 EXPOSE 3200
 
-# Démarrage du service movie (Ariadne + Flask)
+# Démarrage du service user
 CMD ["python", "movie.py"]
