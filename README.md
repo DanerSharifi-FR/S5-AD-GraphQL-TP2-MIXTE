@@ -60,6 +60,7 @@ Objectifs :
 ```bash
 git clone https://github.com/DanerSharifi-FR/S5-AD-GraphQL-TP2-MIXTE.git
 cd S5-AD-GraphQL-TP2-MIXTE
+git checkout feature/mango-docker-mixte
 ```
 
 ### 1.2. Créer l’environnement Python
