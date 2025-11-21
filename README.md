@@ -31,6 +31,9 @@ Ce TP prolonge le TP REST avec une architecture **MIXTE** :
 
 Objectifs :
 
+* suivre l'architecture suivante :
+![Architecture](modelisation.png)
+
 * manipuler **3 styles d’API** (REST, GraphQL, gRPC) dans la même appli,
 
 * pouvoir basculer entre **JSON fichiers** et **MongoDB** avec une simple variable (`USE_MONGO`),
